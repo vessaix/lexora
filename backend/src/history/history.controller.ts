@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Body, Param, Query, HttpException, HttpS
 import { HistoryService } from './history.service'
 import { HistoryEntry } from './history-entry.interface'
 
-@Controller('api/history')
+@Controller('history')
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 

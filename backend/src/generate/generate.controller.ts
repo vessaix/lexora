@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/commo
 import { GenerateContentDto } from '../common/dto/generate-content.dto'
 import { GenerateService } from './generate.service'
 
-@Controller('api/generate')
+@Controller('generate')
 export class GenerateController {
   constructor(private readonly generateService: GenerateService) {}
 

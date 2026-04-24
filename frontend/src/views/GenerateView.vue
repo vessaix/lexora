@@ -1,16 +1,34 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useClickOutside } from '../composables/useClickOutside'
+import { generateContent } from '../services/api'
 
 const topic = ref('')
 const contentType = ref('Blog Post')
 const tone = ref('Professional')
 const length = ref('Medium (~750 words)')
 const generating = ref(false)
+const error = ref('')
+
+// Generated content state
+const generatedContent = ref('')
+const generatedTitle = ref('')
+const generatedWordCount = ref(0)
+const generatedProvider = ref('')
+const hasGenerated = ref(false)
 
 const contentTypes = ['Blog Post', 'Social Media', 'Technical Paper', 'Email Draft', 'Product Copy']
 const tones = ['Professional', 'Creative', 'Witty', 'Urgent', 'Academic']
 const lengths = ['Short (~250 words)', 'Medium (~750 words)', 'Long (~1500+ words)']
+
+// Smart presets per content type
+const contentTypePresets: Record<string, { tone: string; length: string }> = {
+  'Blog Post': { tone: 'Professional', length: 'Medium (~750 words)' },
+  'Social Media': { tone: 'Creative', length: 'Short (~250 words)' },
+  'Technical Paper': { tone: 'Academic', length: 'Long (~1500+ words)' },
+  'Email Draft': { tone: 'Professional', length: 'Short (~250 words)' },
+  'Product Copy': { tone: 'Creative', length: 'Short (~250 words)' },
+}
 
 // Dropdown open state
 const openDropdown = ref<string | null>(null)
@@ -35,20 +53,53 @@ const toggleDropdown = (name: string) => {
 }
 
 const selectOption = (field: 'contentType' | 'tone' | 'length', value: string) => {
-  if (field === 'contentType') contentType.value = value
+  if (field === 'contentType') {
+    contentType.value = value
+    // Auto-update tone and length based on content type preset
+    const preset = contentTypePresets[value]
+    if (preset) {
+      tone.value = preset.tone
+      length.value = preset.length
+    }
+  }
   if (field === 'tone') tone.value = value
   if (field === 'length') length.value = value
   openDropdown.value = null
 }
 
-const handleGenerate = () => {
+const handleGenerate = async () => {
+  if (!isFormValid.value) return
+  
   generating.value = true
-  setTimeout(() => {
+  error.value = ''
+  
+  try {
+    const response = await generateContent({
+      topic: topic.value,
+      contentType: contentType.value,
+      tone: tone.value,
+      length: length.value,
+    })
+    
+    if (response.success) {
+      generatedContent.value = response.data.content
+      generatedTitle.value = response.data.title
+      generatedWordCount.value = response.data.wordCount
+      generatedProvider.value = response.data.provider
+      hasGenerated.value = true
+    }
+  } catch (err: any) {
+    error.value = err.message || 'Failed to generate content. Please try again.'
+  } finally {
     generating.value = false
-  }, 2500)
+  }
 }
 
 const isFormValid = computed(() => topic.value.trim().length > 0)
+
+const copyContent = () => {
+  navigator.clipboard.writeText(generatedContent.value)
+}
 </script>
 
 <template>
@@ -59,6 +110,11 @@ const isFormValid = computed(() => topic.value.trim().length > 0)
         <h1 class="page-title mb-2">Generate Content</h1>
         <p class="page-subtitle">Create AI-powered content tailored to your brand voice.</p>
       </div>
+    </div>
+
+    <!-- Error message -->
+    <div v-if="error" class="card p-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+      <p class="text-red-600 dark:text-red-400 text-sm">{{ error }}</p>
     </div>
 
     <!-- 2-column layout -->
@@ -197,15 +253,15 @@ const isFormValid = computed(() => topic.value.trim().length > 0)
               <button
                 type="submit"
                 :disabled="!isFormValid || generating"
-                class="w-full relative overflow-hidden bg-[#4f46e5] hover:bg-[#5b52eb] disabled:bg-zinc-200 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed text-zinc-900 dark:text-white font-semibold py-3.5 rounded-lg flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#4f46e5]/25 hover:shadow-[#5b52eb]/35"
+                class="w-full relative overflow-hidden bg-[#4f46e5] hover:bg-[#5b52eb] disabled:bg-zinc-200 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-lg flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#4f46e5]/25 hover:shadow-[#5b52eb]/35"
               >
                 <span
                   v-if="generating"
-                  class="w-5 h-5 border-2 border-zinc-900/30 dark:border-white/30 border-t-zinc-900 dark:border-t-white rounded-full animate-spin"
+                  class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
                 ></span>
                 <span v-else class="material-symbols-outlined material-symbols-filled">auto_awesome</span>
                 <span>{{ generating ? 'Generating...' : 'Generate Content' }}</span>
-                <span class="hidden sm:inline text-[10px] text-zinc-900/60 dark:text-white/60 font-normal ml-1">Ctrl + Enter</span>
+                <span class="hidden sm:inline text-[10px] text-white/60 font-normal ml-1">Ctrl + Enter</span>
               </button>
               <p v-if="!isFormValid" class="text-center text-[11px] text-zinc-600 mt-2">
                 Enter a topic to get started
@@ -217,106 +273,82 @@ const isFormValid = computed(() => topic.value.trim().length > 0)
 
       <!-- Right: Output Preview -->
       <div class="lg:col-span-7 space-y-6">
-        <!-- Preview Card -->
-        <div class="card overflow-hidden">
-          <!-- Toolbar -->
-          <div class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-zinc-500">description</span>
-              <span class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Preview Output</span>
-            </div>
-            <div class="flex gap-1">
-              <button class="p-1.5 text-zinc-500 hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined">content_copy</span>
-              </button>
-              <button class="p-1.5 text-zinc-500 hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined">download</span>
-              </button>
-              <button class="p-1.5 text-zinc-500 hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined">share</span>
-              </button>
-            </div>
+        <!-- Empty state -->
+        <div v-if="!hasGenerated && !generating" class="card p-8 flex flex-col items-center justify-center text-center min-h-[400px]">
+          <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-3xl text-zinc-400">edit_note</span>
           </div>
-
-          <!-- Content -->
-          <div class="p-8 space-y-6">
-            <div class="flex items-center gap-4">
-              <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full">
-                Blog Post
-              </span>
-              <span class="text-sm text-zinc-500 italic">Generated 2 minutes ago</span>
-            </div>
-
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white leading-tight">The Future of Generative AI in Enterprise Workflows</h2>
-
-            <div class="relative w-full h-64 rounded-xl overflow-hidden bg-zinc-200 dark:bg-zinc-800">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <span class="material-symbols-outlined text-6xl text-zinc-700">image</span>
-              </div>
-              <div class="absolute inset-0 bg-gradient-to-t from-zinc-50/60 dark:from-zinc-950/60 to-transparent"></div>
-            </div>
-
-            <div class="space-y-6 text-zinc-500 dark:text-zinc-400 text-base leading-relaxed">
-              <p class="font-semibold text-zinc-700 dark:text-zinc-200">
-                In the rapidly evolving landscape of digital transformation, Lexora AI represents the next frontier in cognitive assistance. This transition marks a shift from simple automation to intelligent orchestration.
-              </p>
-
-              <p>
-                The core challenge for modern enterprises isn't just generating data, but synthesizing it into actionable insights. Generative AI tools are now capable of understanding context, nuance, and specific corporate brand voices with unprecedented accuracy.
-              </p>
-
-              <div class="p-6 bg-zinc-50 dark:bg-zinc-900/50 border-l-4 border-indigo-500 rounded-r-xl italic text-zinc-600 dark:text-zinc-300">
-                "Artificial intelligence will not replace managers, but managers who use AI will replace those who do not."
-              </div>
-
-              <h3 class="text-xl font-semibold text-zinc-900 dark:text-white pt-2">Key Strategic Advantages</h3>
-
-              <ul class="space-y-3">
-                <li class="flex items-start gap-3">
-                  <span class="material-symbols-outlined text-indigo-400 mt-0.5 material-symbols-filled">check_circle</span>
-                  <span>Reduced time-to-market for complex content strategies.</span>
-                </li>
-                <li class="flex items-start gap-3">
-                  <span class="material-symbols-outlined text-indigo-400 mt-0.5 material-symbols-filled">check_circle</span>
-                  <span>Consistency across global omni-channel communications.</span>
-                </li>
-                <li class="flex items-start gap-3">
-                  <span class="material-symbols-outlined text-indigo-400 mt-0.5 material-symbols-filled">check_circle</span>
-                  <span>Data-driven refinement based on historical performance.</span>
-                </li>
-              </ul>
-
-              <p>
-                As we look toward the 2025 horizon, the integration of Large Language Models (LLMs) into daily SaaS platforms will become seamless. Lexora is built on this very premise—power at your fingertips without the friction of complex prompt engineering.
-              </p>
-            </div>
-          </div>
+          <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-2">Ready to Generate</h3>
+          <p class="text-sm text-zinc-500 max-w-sm">
+            Enter a topic and click "Generate Content" to see AI-powered content here.
+          </p>
         </div>
 
-        <!-- Analysis Bento -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="card p-4">
-            <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Readability</p>
-            <div class="flex items-end justify-between">
-              <span class="text-2xl font-bold text-zinc-900 dark:text-white">84%</span>
-              <span class="text-emerald-400 text-xs mb-1">Optimal</span>
-            </div>
-          </div>
-          <div class="card p-4">
-            <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Tone Match</p>
-            <div class="flex items-end justify-between">
-              <span class="text-2xl font-bold text-zinc-900 dark:text-white">High</span>
-              <span class="text-indigo-400 text-xs mb-1">Accurate</span>
-            </div>
-          </div>
-          <div class="card p-4">
-            <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Keywords</p>
-            <div class="flex items-end justify-between">
-              <span class="text-2xl font-bold text-zinc-900 dark:text-white">12</span>
-              <span class="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Detected</span>
-            </div>
-          </div>
+        <!-- Loading state -->
+        <div v-if="generating" class="card p-8 flex flex-col items-center justify-center text-center min-h-[400px]">
+          <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+          <p class="text-sm text-zinc-500">Generating your content...</p>
         </div>
+
+        <!-- Generated content -->
+        <template v-if="hasGenerated && !generating">
+          <div class="card overflow-hidden">
+            <!-- Toolbar -->
+            <div class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-zinc-500">description</span>
+                <span class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Preview Output</span>
+              </div>
+              <div class="flex gap-1">
+                <button @click="copyContent" class="p-1.5 text-zinc-500 hover:text-indigo-400 transition-colors" title="Copy">
+                  <span class="material-symbols-outlined">content_copy</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8 space-y-6">
+              <div class="flex items-center gap-4">
+                <span class="px-3 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full"
+                >
+                  {{ contentType }}
+                </span>
+                <span class="text-sm text-zinc-500">{{ generatedWordCount }} words • {{ generatedProvider }}</span>
+              </div>
+
+              <h2 class="text-3xl font-bold text-zinc-900 dark:text-white leading-tight">{{ generatedTitle }}</h2>
+
+              <div class="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-400">
+                <div v-html="generatedContent.replace(/\n/g, '<br>')"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analysis Bento -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="card p-4">
+              <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Word Count</p>
+              <div class="flex items-end justify-between">
+                <span class="text-2xl font-bold text-zinc-900 dark:text-white">{{ generatedWordCount }}</span>
+                <span class="text-emerald-400 text-xs mb-1">Generated</span>
+              </div>
+            </div>
+            <div class="card p-4">
+              <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Provider</p>
+              <div class="flex items-end justify-between">
+                <span class="text-2xl font-bold text-zinc-900 dark:text-white capitalize">{{ generatedProvider }}</span>
+                <span class="text-indigo-400 text-xs mb-1">AI</span>
+              </div>
+            </div>
+            <div class="card p-4">
+              <p class="text-zinc-500 text-[10px] font-medium uppercase tracking-wider mb-1">Content Type</p>
+              <div class="flex items-end justify-between">
+                <span class="text-2xl font-bold text-zinc-900 dark:text-white">{{ contentType }}</span>
+                <span class="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Format</span>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </div>
