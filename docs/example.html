@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script
+        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-primary-container": "#dad7ff", "on-error-container": "#93000a", "error-container": "#ffdad6", surface: "#f8f9ff", "surface-container-lowest": "#ffffff", "surface-dim": "#cbdbf5", "on-secondary-container": "#fffbff", background: "#f8f9ff", "tertiary-fixed": "#ffdbcc", "on-secondary": "#ffffff", "tertiary-container": "#a44100", "surface-variant": "#d3e4fe", error: "#ba1a1a", "on-secondary-fixed-variant": "#2f2ebe", "on-tertiary-container": "#ffd2be", "surface-container": "#e5eeff", "inverse-on-surface": "#eaf1ff", "inverse-primary": "#c3c0ff", secondary: "#4648d4", "on-background": "#0b1c30", "on-tertiary-fixed-variant": "#7b2f00", "on-primary": "#ffffff", "on-error": "#ffffff", "inverse-surface": "#213145", "on-secondary-fixed": "#07006c", "surface-container-low": "#eff4ff", "on-surface-variant": "#464555", "on-tertiary-fixed": "#351000", "surface-container-high": "#dce9ff", "on-tertiary": "#ffffff", "on-surface": "#0b1c30", "secondary-fixed-dim": "#c0c1ff", "surface-tint": "#4d44e3", "on-primary-fixed-variant": "#3323cc", "outline-variant": "#c7c4d8", outline: "#777587", tertiary: "#7e3000", "secondary-fixed": "#e1e0ff", "primary-fixed-dim": "#c3c0ff", "on-primary-fixed": "#0f0069", primary: "#3525cd", "surface-container-highest": "#d3e4fe", "primary-container": "#4f46e5", "secondary-container": "#6063ee", "primary-fixed": "#e2dfff", "surface-bright": "#f8f9ff", "tertiary-fixed-dim": "#ffb695" }, borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" }, spacing: { xl: "40px", gutter: "24px", xs: "4px", md: "16px", sm: "8px", base: "4px", lg: "24px", "container-max": "1280px" }, fontFamily: { "label-md": ["Inter"], "label-sm": ["Inter"], h1: ["Inter"], h3: ["Inter"], h2: ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "body-md": ["Inter"] }, fontSize: { "label-md": ["13px", { lineHeight: "1", letterSpacing: "0.01em", fontWeight: "500" }], "label-sm": ["12px", { lineHeight: "1", letterSpacing: "0.02em", fontWeight: "500" }], h1: ["36px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "600" }], h3: ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }], h2: ["30px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "600" }], "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }], "body-sm": ["14px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }], "body-md": ["16px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }] } } } };</script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 antialiased">
+    <!-- SideNavBar Component -->
+    <aside
+        class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex flex-col py-6 px-4 font-inter antialiased z-50">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-xl" data-icon="auto_awesome"
+                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Lexora AI</h1>
+                <p class="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">Enterprise Assistant</p>
+            </div>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 group"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                <span class="font-label-md text-label-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-indigo-600 dark:text-indigo-400 font-semibold bg-zinc-100 dark:bg-zinc-900 border-r-2 border-indigo-600 transition-all"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="auto_awesome"
+                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                <span class="font-label-md text-label-md">Generate</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 group"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="history">history</span>
+                <span class="font-label-md text-label-md">History</span>
+            </a>
+        </nav>
+        <div class="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 group"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                <span class="font-label-md text-label-md">Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 group"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="help">help</span>
+                <span class="font-label-md text-label-md">Support</span>
+            </a>
+            <div class="mt-4 flex items-center gap-3 px-3 py-2">
+                <img class="w-8 h-8 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-800"
+                    data-alt="Close up portrait of a professional woman with a warm expression in a modern office setting"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDn94g6wTHW9GTw9zBAlON4bFP0gKhruHSdSFffmzkoJFsziJNlVr18a38x_DfFd0f5kZBj7GWkSb0kEBlG2cv3IYKF55rfjO6LbToqxTnCkv4WtzONGjJgx657jFfKmkEXOi5c3EzURzwHJeeeBzW-idLT_PFETlRBkfqB6lQ6g6lTGZwRuTTh4cC6A9v7Q5p9KlUGRjv4qZe0BLXRvy5Yr8J0aia6oF1fE4gFI3bEgAr0kWiQB-zhWUL_3_xy917HICQsZLLj4k_" />
+                <div class="overflow-hidden">
+                    <p class="font-label-sm text-label-sm text-zinc-900 dark:text-zinc-100 truncate">Sarah Miller</p>
+                    <p class="text-[10px] text-zinc-500 truncate">sarah@lexora.ai</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <!-- TopAppBar Component -->
+    <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-8">
+        <div class="flex items-center gap-4">
+            <h2 class="font-h3 text-h3 text-zinc-900 dark:text-zinc-50">Generate Content</h2>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="p-2 text-zinc-500 dark:text-zinc-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer active:scale-95">
+                <span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+            </button>
+            <button
+                class="p-2 text-zinc-500 dark:text-zinc-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer active:scale-95 relative">
+                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                <span
+                    class="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full border-2 border-white dark:border-zinc-900"></span>
+            </button>
+            <div class="h-8 w-px bg-zinc-200 dark:border-zinc-800"></div>
+            <img alt="User Profile"
+                class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 object-cover"
+                data-alt="Close up portrait of a professional woman with a warm expression in a modern office setting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEVaHbF1LAKKW3whTvBefBD9-T-VRK9deHIXFh7DYRPSLtoahO3ITrVIOkXn950CrNwE5sqp3QydUDijaQIfVUUwTqfcHBGA9bBsI2aDzwkAkIST1E--HvBddMoB_bBB7ZHcd0sl-t3y_RcBXSNFXIBnfJFBnhLJrKC44dExfjv388w-fj0CQW3rEhv672gANZK-gznhlw5plOaTQOFa2D362pEf7HSEqrm-sS2Ih1EJ8WJ-micdq4F8NEJq_5_MTsp4LAebdUnikw" />
+        </div>
+    </header>
+    <!-- Main Canvas -->
+    <main class="ml-64 pt-16 min-h-screen">
+        <div class="p-xl max-w-container-max mx-auto">
+            <div class="grid grid-cols-12 gap-lg">
+                <!-- Left Column: Input Form -->
+                <div class="col-span-12 lg:col-span-5">
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-lg sticky top-24">
+                        <div class="flex items-center gap-2 mb-6">
+                            <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400"
+                                data-icon="edit_note">edit_note</span>
+                            <h3 class="font-h3 text-h3">Prompt Details</h3>
+                        </div>
+                        <form class="space-y-md">
+                            <div>
+                                <label
+                                    class="block font-label-md text-label-md text-zinc-700 dark:text-zinc-300 mb-2">Topic
+                                    or Prompt</label>
+                                <textarea
+                                    class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-md text-body-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none"
+                                    placeholder="What would you like Lexora to write about today?" rows="6"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-md">
+                                <div>
+                                    <label
+                                        class="block font-label-md text-label-md text-zinc-700 dark:text-zinc-300 mb-2">Content
+                                        Type</label>
+                                    <select
+                                        class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg px-md py-sm text-body-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                                        <option>Blog Post</option>
+                                        <option>Social Media</option>
+                                        <option>Technical Paper</option>
+                                        <option>Email Draft</option>
+                                        <option>Product Copy</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block font-label-md text-label-md text-zinc-700 dark:text-zinc-300 mb-2">Tone</label>
+                                    <select
+                                        class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg px-md py-sm text-body-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                                        <option>Professional</option>
+                                        <option>Creative</option>
+                                        <option>Witty</option>
+                                        <option>Urgent</option>
+                                        <option>Academic</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block font-label-md text-label-md text-zinc-700 dark:text-zinc-300 mb-2">Target
+                                    Length</label>
+                                <select
+                                    class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg px-md py-sm text-body-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                                    <option>Short (~250 words)</option>
+                                    <option>Medium (~750 words)</option>
+                                    <option>Long (~1500+ words)</option>
+                                </select>
+                            </div>
+                            <div class="pt-4">
+                                <button
+                                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+                                    <span class="material-symbols-outlined text-lg" data-icon="auto_awesome"
+                                        style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                    Generate Content
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Right Column: Output Preview -->
+                <div class="col-span-12 lg:col-span-7">
+                    <div class="space-y-lg">
+                        <!-- Preview Card -->
+                        <div
+                            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+                            <div
+                                class="px-lg py-md border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-950/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-zinc-400"
+                                        data-icon="description">description</span>
+                                    <span class="font-label-md text-label-md text-zinc-500">Preview Output</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button
+                                        class="p-1.5 text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        <span class="material-symbols-outlined"
+                                            data-icon="content_copy">content_copy</span>
+                                    </button>
+                                    <button
+                                        class="p-1.5 text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        <span class="material-symbols-outlined" data-icon="download">download</span>
+                                    </button>
+                                    <button
+                                        class="p-1.5 text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        <span class="material-symbols-outlined" data-icon="share">share</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-xl space-y-md">
+                                <div class="flex items-center gap-4 mb-8">
+                                    <span
+                                        class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full">Blog
+                                        Post</span>
+                                    <span class="text-zinc-400 text-body-sm italic">Generated 2 minutes ago</span>
+                                </div>
+                                <h2 class="font-h1 text-h1 mb-6 leading-tight">The Future of Generative AI in Enterprise
+                                    Workflows</h2>
+                                <div class="relative w-full h-64 rounded-xl overflow-hidden mb-8">
+                                    <img class="w-full h-full object-cover"
+                                        data-alt="Futuristic digital neural network with glowing blue data nodes and abstract technological connections"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuArvV2WhtUdqJMbLulbBlVxEpa2Qp8zFhO3bV-kEcgkrwwxEMpbKk56lGqOwMM3iQ9onpFe0nGzAN6Km0y0j0VmmBbKeeVhtbMsL_u6Y5jFPJ1TVBSUhe7_GOO8se8BQpuQPD6B5Gw_4ZrRGhZ5GZTg0twgKDx-mrA1lIWXULGfxsjV604gFYfTXP3LiBFspn5fAGQxOyfmOFEG3yLFUk81aB_KDA_yh2Xy1Pyv0VIoucN3NuPIqyPlJ3a2dSAQ0MX6LtGE9fxCAoeT" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/60 to-transparent">
+                                    </div>
+                                </div>
+                                <div class="space-y-lg text-zinc-600 dark:text-zinc-400 font-body-md leading-relaxed">
+                                    <p class="font-semibold text-zinc-900 dark:text-zinc-100">In the rapidly evolving
+                                        landscape of digital transformation, Lexora AI represents the next frontier in
+                                        cognitive assistance. This transition marks a shift from simple automation to
+                                        intelligent orchestration.</p>
+                                    <p>The core challenge for modern enterprises isn't just generating data, but
+                                        synthesizing it into actionable insights. Generative AI tools are now capable of
+                                        understanding context, nuance, and specific corporate brand voices with
+                                        unprecedented accuracy.</p>
+                                    <div
+                                        class="p-lg bg-zinc-50 dark:bg-zinc-950 border-l-4 border-indigo-600 rounded-r-xl italic text-zinc-800 dark:text-zinc-200">
+                                        "Artificial intelligence will not replace managers, but managers who use AI will
+                                        replace those who do not."
+                                    </div>
+                                    <h3 class="font-h3 text-h3 text-zinc-900 dark:text-zinc-50 pt-4">Key Strategic
+                                        Advantages</h3>
+                                    <ul class="space-y-sm">
+                                        <li class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-indigo-500 mt-0.5"
+                                                data-icon="check_circle"
+                                                style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                            <span>Reduced time-to-market for complex content strategies.</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-indigo-500 mt-0.5"
+                                                data-icon="check_circle"
+                                                style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                            <span>Consistency across global omni-channel communications.</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-indigo-500 mt-0.5"
+                                                data-icon="check_circle"
+                                                style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                            <span>Data-driven refinement based on historical performance.</span>
+                                        </li>
+                                    </ul>
+                                    <p>As we look toward the 2025 horizon, the integration of Large Language Models
+                                        (LLMs) into daily SaaS platforms will become seamless. Lexora is built on this
+                                        very premise—power at your fingertips without the friction of complex prompt
+                                        engineering.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Analysis Card (Bento Style) -->
+                        <div class="grid grid-cols-3 gap-md">
+                            <div
+                                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-md">
+                                <p class="text-zinc-500 font-label-sm text-label-sm mb-1">Readability</p>
+                                <div class="flex items-end justify-between">
+                                    <span class="text-h3 font-h3">84%</span>
+                                    <span class="text-green-500 text-xs mb-1">Optimal</span>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-md">
+                                <p class="text-zinc-500 font-label-sm text-label-sm mb-1">Tone Match</p>
+                                <div class="flex items-end justify-between">
+                                    <span class="text-h3 font-h3">High</span>
+                                    <span class="text-indigo-500 text-xs mb-1">Accurate</span>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-md">
+                                <p class="text-zinc-500 font-label-sm text-label-sm mb-1">Keywords</p>
+                                <div class="flex items-end justify-between">
+                                    <span class="text-h3 font-h3">12</span>
+                                    <span class="text-zinc-400 text-xs mb-1">Detected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Contextual FAB (Hidden on this transactional/focused screen as per rules) -->
+    <!-- The FAB is suppressed because this is a generation task screen -->
+</body>
+
+</html>

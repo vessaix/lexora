@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <title>Lexora AI</title>
+    <script>
+      (function() {
+        function getSystemTheme() {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        function applyTheme() {
+          try {
+            var html = document.documentElement;
+            var stored = localStorage.getItem('theme');
+            var theme = stored === 'system' || !stored ? getSystemTheme() : stored;
+            
+            if (theme === 'dark') {
+              html.classList.add('dark');
+            } else {
+              html.classList.remove('dark');
+            }
+          } catch (e) {}
+        }
+        
+        applyTheme();
+        
+        // Re-apply after a tick for Chrome
+        if (typeof requestAnimationFrame !== 'undefined') {
+          requestAnimationFrame(applyTheme);
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
