@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useClickOutside } from '../composables/useClickOutside'
 import { generateContent } from '../services/api'
+import { saveToHistory } from '../services/dashboard'
 
 const topic = ref('')
 const contentType = ref('Blog Post')
@@ -87,6 +88,22 @@ const handleGenerate = async () => {
       generatedWordCount.value = response.data.wordCount
       generatedProvider.value = response.data.provider
       hasGenerated.value = true
+      
+      // Save to history
+      try {
+        await saveToHistory({
+          title: response.data.title,
+          content: response.data.content,
+          contentType: contentType.value,
+          tone: tone.value,
+          length: length.value,
+          provider: response.data.provider,
+          model: response.data.model,
+          wordCount: response.data.wordCount,
+        })
+      } catch (historyErr) {
+        console.warn('Failed to save to history:', historyErr)
+      }
     }
   } catch (err: any) {
     error.value = err.message || 'Failed to generate content. Please try again.'

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@unocss/reset": "^66.6.8",
+    "jspdf": "^4.2.1",
     "unocss": "^66.6.8",
     "vue": "^3.5.32",
     "vue-router": "^4.6.4"
