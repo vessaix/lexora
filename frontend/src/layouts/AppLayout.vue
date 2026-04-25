@@ -63,7 +63,7 @@ const mainNav = [
 
 const bottomNav = [
   { name: 'Settings', path: '/settings', icon: 'settings' },
-  { name: 'Support', path: '#', icon: 'help_outline' },
+  { name: 'Support', path: '/support', icon: 'help_outline' },
 ]
 
 const isActive = (path: string) => {
