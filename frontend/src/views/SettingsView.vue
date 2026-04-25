@@ -1,42 +1,54 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { getUser, fetchProfile, type User } from '../services/auth'
 
-const fullName = ref('Alex Rivera')
-const email = ref('alex@lexora.ai')
-const workspaceName = ref('Lexora Design Team')
+const user = ref<User | null>(null)
+const loading = ref(true)
+const saveSuccess = ref(false)
+const workspaceName = ref('Lexora AI')
 const language = ref('English (US)')
 const autoOptimize = ref(true)
-const saveSuccess = ref(false)
 
 const languages = ['English (US)', 'Spanish', 'French', 'German']
 
-const apiKeys = [
-  {
-    name: 'Production Main',
-    key: 'lx_...4e21',
-    status: 'active',
-    usage: 82,
-    used: '4.1k',
-    limit: '5k',
-    created: 'Oct 12, 2023',
-  },
-  {
-    name: 'Staging Environment',
-    key: 'lx_...9b02',
-    status: 'inactive',
-    usage: 1,
-    used: '12',
-    limit: '5k',
-    created: 'Dec 01, 2023',
-  },
-]
+const fullName = computed({
+  get: () => user.value?.name || '',
+  set: (val) => {
+    if (user.value) user.value.name = val
+  }
+})
 
-const billingHistory = [
-  { date: 'Dec 12, 2023', invoice: 'Invoice #LEX-2023-012', amount: '$49.00' },
-  { date: 'Nov 12, 2023', invoice: 'Invoice #LEX-2023-011', amount: '$49.00' },
-]
+const email = computed({
+  get: () => user.value?.email || '',
+  set: (val) => {
+    if (user.value) user.value.email = val
+  }
+})
+
+const initials = computed(() => {
+  if (!user.value?.name) return 'U'
+  return user.value.name.split(' ').map(n => n[0]).join('').toUpperCase()
+})
+
+onMounted(async () => {
+  // Try to get from localStorage first
+  user.value = getUser()
+  
+  // Then fetch fresh data from backend
+  try {
+    const freshUser = await fetchProfile()
+    if (freshUser) {
+      user.value = freshUser
+    }
+  } catch (err) {
+    console.error('Failed to fetch profile:', err)
+  } finally {
+    loading.value = false
+  }
+})
 
 function saveProfile() {
+  // In a real app, this would send to backend
   saveSuccess.value = true
   setTimeout(() => {
     saveSuccess.value = false
@@ -52,8 +64,13 @@ function saveProfile() {
       <p class="page-subtitle mt-2">Manage your account preferences, workspace configurations, and API keys.</p>
     </header>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="flex items-center justify-center min-h-[200px]">
+      <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+    </div>
+
     <!-- Profile Section -->
-    <section id="profile">
+    <section v-else id="profile">
       <div class="flex items-center gap-2 mb-6">
         <span class="material-symbols-outlined text-indigo-400">person</span>
         <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">Profile</h2>
@@ -62,10 +79,20 @@ function saveProfile() {
       <div class="card p-8">
         <div class="flex items-start gap-8 mb-8 pb-8 border-b border-zinc-200 dark:border-zinc-800">
           <div class="relative group">
-            <div class="w-24 h-24 rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-indigo-600 flex items-center justify-center text-2xl font-bold text-zinc-900 dark:text-white"
-            >AR</div>
+            <img
+              v-if="user?.picture"
+              :src="user.picture"
+              class="w-24 h-24 rounded-full border-2 border-zinc-200 dark:border-zinc-800 object-cover"
+              alt="Profile"
+            />
+            <div
+              v-else
+              class="w-24 h-24 rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-indigo-600 flex items-center justify-center text-2xl font-bold text-white"
+            >
+              {{ initials }}
+            </div>
             <button
-              class="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full border-2 border-zinc-50 dark:border-zinc-950 text-zinc-900 dark:text-white hover:bg-indigo-500 transition-colors"
+              class="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full border-2 border-zinc-50 dark:border-zinc-950 text-white hover:bg-indigo-500 transition-colors"
             >
               <span class="material-symbols-outlined text-sm">edit</span>
             </button>
@@ -195,154 +222,39 @@ function saveProfile() {
       </div>
     </section>
 
-    <!-- API Management Section -->
-    <section id="api">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-indigo-400">terminal</span>
-          <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">API Management</h2>
-        </div>
-        <button class="btn-ghost flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">add</span>
-          Create New Key
-        </button>
-      </div>
-
-      <div class="card overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-                <th class="px-6 py-4 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Key Name</th>
-                <th class="px-6 py-4 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-4 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Usage</th>
-                <th class="px-6 py-4 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Created</th>
-                <th class="px-6 py-4 text-[11px] font-medium text-zinc-500 uppercase tracking-wider text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-200/50 dark:divide-zinc-800/50">
-              <tr v-for="key in apiKeys" :key="key.name" class="hover:bg-zinc-200/50 dark:hover:bg-zinc-800/30 transition-colors"
-              >
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">{{ key.name }}</span>
-                    <span class="text-xs font-mono text-zinc-600">{{ key.key }}</span>
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                    :class="key.status === 'active'
-                      ? 'bg-emerald-500/10 text-emerald-400'
-                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'"
-                  >
-                    <span
-                      class="w-1.5 h-1.5 rounded-full"
-                      :class="key.status === 'active' ? 'bg-emerald-500' : 'bg-zinc-600'"
-                    ></span>
-                    {{ key.status === 'active' ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="w-32">
-                    <div class="flex justify-between text-[10px] text-zinc-500 mb-1">
-                      <span>{{ key.usage }}% used</span>
-                      <span>{{ key.used }}/{{ key.limit }}</span>
-                    </div>
-                    <div class="h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                      <div class="h-full bg-indigo-500 rounded-full" :style="`width: ${key.usage}%`"></div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">{{ key.created }}</td>
-                <td class="px-6 py-4 text-right">
-                  <button class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
-                  >
-                    <span class="material-symbols-outlined">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Billing Section -->
-    <section id="billing">
+    <!-- Connected Account Section -->
+    <section id="account" class="mt-12">
       <div class="flex items-center gap-2 mb-6">
-        <span class="material-symbols-outlined text-indigo-400">payments</span>
-        <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">Billing</h2>
+        <span class="material-symbols-outlined text-indigo-400">shield</span>
+        <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">Account Security</h2>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Current Plan -->
-        <div class="card p-8 flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-lg font-semibold text-zinc-700 dark:text-zinc-200">Current Plan</h3>
-              <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
-              >Pro</span>
-            </div>
-            <div class="flex items-baseline gap-1 mb-2">
-              <span class="text-3xl font-bold text-zinc-900 dark:text-white">$49</span>
-              <span class="text-zinc-500">/per month</span>
-            </div>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-6">Your next billing date is January 12, 2024.</p>
-          </div>
-          <div class="flex gap-3">
-            <button class="flex-1 btn-ghost">Upgrade Plan</button>
-            <button class="flex-1 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:border-red-900/50 rounded-lg text-sm font-medium py-2 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-
-        <!-- Payment Method -->
-        <div class="card p-8">
-          <h3 class="text-lg font-semibold text-zinc-700 dark:text-zinc-200 mb-6">Payment Method</h3>
-          <div class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg flex items-center justify-between mb-6">
+      <div class="card p-8">
+        <div class="space-y-6">
+          <div class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-8 bg-zinc-200 dark:bg-zinc-800 rounded flex items-center justify-center">
-                <span class="material-symbols-outlined text-zinc-500 dark:text-zinc-400">credit_card</span>
+              <div class="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
               </div>
               <div>
-                <p class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Visa ending in 4242</p>
-                <p class="text-xs text-zinc-500">Expires 12/26</p>
+                <p class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Google Account</p>
+                <p class="text-xs text-zinc-500">{{ user?.email || 'Connected' }}</p>
               </div>
             </div>
-            <button class="text-indigo-400 text-xs font-semibold hover:underline">Edit</button>
+            <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-full">Connected</span>
           </div>
-          <button class="w-full flex items-center justify-center gap-2 border border-dashed border-zinc-300 dark:border-zinc-700 py-3 rounded-lg text-zinc-500 hover:border-zinc-400 dark:hover:border-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all text-sm"
-          >
-            <span class="material-symbols-outlined text-sm">add</span>
-            Add Backup Method
-          </button>
-        </div>
-      </div>
 
-      <!-- Billing History -->
-      <div class="mt-6 card overflow-hidden">
-        <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
-          <h4 class="font-medium text-zinc-700 dark:text-zinc-200">Billing History</h4>
+          <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+            <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-3">Session</h3>
+            <p class="text-xs text-zinc-500 mb-4">You are currently signed in. Sign out to end your session.</p>
+            <button class="btn-ghost text-sm">Sign Out</button>
+          </div>
         </div>
-        <table class="w-full text-left text-sm">
-          <tbody class="divide-y divide-zinc-200/50 dark:divide-zinc-800/50">
-            <tr v-for="bill in billingHistory" :key="bill.invoice"
-            >
-              <td class="px-6 py-4 text-zinc-500 dark:text-zinc-400">{{ bill.date }}</td>
-              <td class="px-6 py-4 text-zinc-700 dark:text-zinc-200">{{ bill.invoice }}</td>
-              <td class="px-6 py-4 text-zinc-700 dark:text-zinc-200">{{ bill.amount }}</td>
-              <td class="px-6 py-4 text-right">
-                <button class="text-indigo-400 hover:text-indigo-300 transition-colors"
-                >
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </section>
   </div>
