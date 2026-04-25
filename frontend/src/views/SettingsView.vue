@@ -119,33 +119,12 @@ function saveProfile() {
           </div>
         </div>
 
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-zinc-700 dark:text-zinc-200">Change Password</h3>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Current Password</label>
-              <input
-                class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                placeholder="••••••••"
-                type="password"
-              />
-            </div>
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">New Password</label>
-              <input
-                class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                placeholder="••••••••"
-                type="password"
-              />
-            </div>
-          </div>
-          <div class="flex justify-end pt-4 gap-3">
-            <span v-if="saveSuccess" class="flex items-center text-sm text-emerald-400">
-              <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
-              Saved successfully
-            </span>
-            <button @click="saveProfile" class="btn-primary px-6">Save Changes</button>
-          </div>
+        <div class="flex justify-end pt-4 gap-3">
+          <span v-if="saveSuccess" class="flex items-center text-sm text-emerald-400">
+            <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
+            Saved successfully
+          </span>
+          <button @click="saveProfile" class="btn-primary px-6">Save Changes</button>
         </div>
       </div>
     </section>
