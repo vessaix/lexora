@@ -103,17 +103,8 @@ const currentThemeIcon = () => {
     <header
       class="fixed top-0 right-0 left-64 h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 backdrop-blur-xl z-40 flex items-center justify-between px-8"
     >
-      <div class="flex items-center flex-1 max-w-xl">
-        <div class="relative w-full group">
-          <span
-            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors"
-          >search</span>
-          <input
-            class="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-full py-1.5 pl-10 pr-4 text-sm text-zinc-900 dark:text-zinc-300 placeholder-zinc-500 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
-            placeholder="Search resources, projects or help..."
-            type="text"
-          />
-        </div>
+      <div class="flex-1">
+        <!-- Page title or breadcrumb could go here -->
       </div>
       <div class="flex items-center gap-4">
         <!-- Theme Dropdown -->
