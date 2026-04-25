@@ -4,6 +4,7 @@ import { useClickOutside } from '../composables/useClickOutside'
 import { generateContent } from '../services/api'
 import { saveToHistory } from '../services/dashboard'
 import { getGenerationDefaults } from '../services/preferences'
+import { addGenerationNotification } from '../services/notifications'
 
 const topic = ref('')
 const contentType = ref('Blog Post')
@@ -110,6 +111,9 @@ const handleGenerate = async () => {
           model: response.data.model,
           wordCount: response.data.wordCount,
         })
+        
+        // Add notification
+        addGenerationNotification(response.data.title, response.data.wordCount)
       } catch (historyErr) {
         console.warn('Failed to save to history:', historyErr)
       }

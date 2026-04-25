@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { useRoute, RouterLink, RouterView } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useTheme } from '../composables/useTheme'
 import { useClickOutside } from '../composables/useClickOutside'
 import { getUser, logout, isAuthenticated } from '../services/auth'
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  clearAllNotifications,
+  formatTimeAgo,
+  addWelcomeNotification,
+  type Notification,
+} from '../services/notifications'
 
 const route = useRoute()
 const { currentMode, setTheme } = useTheme()
@@ -11,6 +20,11 @@ const themeMenuOpen = ref(false)
 const themeMenuRef = ref<HTMLElement | null>(null)
 const userMenuOpen = ref(false)
 const userMenuRef = ref<HTMLElement | null>(null)
+const notifMenuOpen = ref(false)
+const notifMenuRef = ref<HTMLElement | null>(null)
+
+const notifications = ref<Notification[]>([])
+const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
 const currentUser = computed(() => getUser())
 const authenticated = computed(() => isAuthenticated())
@@ -21,6 +35,18 @@ useClickOutside(themeMenuRef, () => {
 
 useClickOutside(userMenuRef, () => {
   userMenuOpen.value = false
+})
+
+useClickOutside(notifMenuRef, () => {
+  notifMenuOpen.value = false
+})
+
+onMounted(() => {
+  notifications.value = getNotifications()
+  if (authenticated.value) {
+    addWelcomeNotification()
+    notifications.value = getNotifications()
+  }
 })
 
 const themeOptions = [
@@ -67,6 +93,44 @@ const handleLogout = () => {
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase()
+}
+
+const toggleNotifications = () => {
+  notifMenuOpen.value = !notifMenuOpen.value
+  if (notifMenuOpen.value) {
+    notifications.value = getNotifications()
+  }
+}
+
+const handleMarkAsRead = (id: string) => {
+  markAsRead(id)
+  notifications.value = getNotifications()
+}
+
+const handleMarkAllAsRead = () => {
+  markAllAsRead()
+  notifications.value = getNotifications()
+}
+
+const handleClearAll = () => {
+  clearAllNotifications()
+  notifications.value = []
+}
+
+const getNotificationIcon = (type: string): string => {
+  switch (type) {
+    case 'success': return 'check_circle'
+    case 'warning': return 'warning'
+    default: return 'info'
+  }
+}
+
+const getNotificationColor = (type: string): string => {
+  switch (type) {
+    case 'success': return 'text-emerald-400'
+    case 'warning': return 'text-amber-400'
+    default: return 'text-blue-400'
+  }
 }
 </script>
 
@@ -181,11 +245,64 @@ const getInitials = (name: string) => {
           </div>
         </div>
 
-        <button
-          class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
-        >
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
+        <!-- Notifications -->
+        <div ref="notifMenuRef" class="relative">
+          <button
+            @click="toggleNotifications"
+            class="relative w-10 h-10 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+          >
+            <span class="material-symbols-outlined">{{ unreadCount > 0 ? 'notifications_unread' : 'notifications' }}</span>
+            <span
+              v-if="unreadCount > 0"
+              class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+            >{{ unreadCount }}</span>
+          </button>
+          <div
+            v-if="notifMenuOpen"
+            class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden z-50 shadow-xl"
+          >
+            <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+              <p class="text-sm font-semibold text-zinc-900 dark:text-white">Notifications</p>
+              <div class="flex items-center gap-2">
+                <button
+                  v-if="unreadCount > 0"
+                  @click="handleMarkAllAsRead"
+                  class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                >Mark all read</button>
+                <button
+                  v-if="notifications.length > 0"
+                  @click="handleClearAll"
+                  class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                >Clear</button>
+              </div>
+            </div>
+
+            <div class="max-h-80 overflow-y-auto">
+              <div
+                v-for="notification in notifications"
+                :key="notification.id"
+                @click="notification.link ? $router.push(notification.link) : null; handleMarkAsRead(notification.id)"
+                class="flex items-start gap-3 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                :class="!notification.read ? 'bg-zinc-50/50 dark:bg-zinc-800/30' : ''"
+              >
+                <span :class="`material-symbols-outlined text-lg mt-0.5 ${getNotificationColor(notification.type)}`">{{ getNotificationIcon(notification.type) }}</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-200 truncate">{{ notification.title }}</p>
+                    <span v-if="!notification.read" class="w-2 h-2 bg-indigo-500 rounded-full flex-shrink-0"></span>
+                  </div>
+                  <p class="text-xs text-zinc-500 mt-0.5 line-clamp-2">{{ notification.message }}</p>
+                  <p class="text-[10px] text-zinc-400 mt-1">{{ formatTimeAgo(notification.createdAt) }}</p>
+                </div>
+              </div>
+
+              <div v-if="notifications.length === 0" class="px-4 py-8 text-center">
+                <span class="material-symbols-outlined text-3xl text-zinc-300 dark:text-zinc-600 mb-2 block">notifications_off</span>
+                <p class="text-sm text-zinc-500">No notifications yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-2"></div>
         <div v-if="authenticated" ref="userMenuRef" class="relative">
           <button
