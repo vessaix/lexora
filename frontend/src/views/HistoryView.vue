@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { fetchHistory, deleteHistoryEntry, type HistoryEntry } from '../services/history'
 
 interface HistoryItem {
-  id: number
+  id: string
   title: string
   icon: string
   iconColor: string
@@ -13,48 +14,96 @@ interface HistoryItem {
   status: 'completed' | 'draft'
 }
 
-const historyItems = ref<HistoryItem[]>([
-  {
-    id: 1,
-    title: 'The Future of AI in SaaS',
-    icon: 'article',
-    iconColor: 'text-indigo-400',
-    iconBg: 'bg-indigo-500/10',
-    type: 'Blog Post',
-    date: '2 hours ago',
+const entries = ref<HistoryEntry[]>([])
+const loading = ref(true)
+const error = ref('')
+
+onMounted(async () => {
+  try {
+    entries.value = await fetchHistory(50)
+  } catch (err: any) {
+    error.value = err.message || 'Failed to load history'
+  } finally {
+    loading.value = false
+  }
+})
+
+function getIconForType(contentType: string): string {
+  const iconMap: Record<string, string> = {
+    'Blog Post': 'article',
+    'Social Media': 'share',
+    'Technical Paper': 'science',
+    'Email Draft': 'mail',
+    'Product Copy': 'shopping_bag',
+    'Marketing Plan': 'campaign',
+    'Email': 'alternate_email',
+  }
+  return iconMap[contentType] || 'description'
+}
+
+function getIconColor(contentType: string): string {
+  const colorMap: Record<string, string> = {
+    'Blog Post': 'text-indigo-400',
+    'Social Media': 'text-purple-400',
+    'Technical Paper': 'text-blue-400',
+    'Email Draft': 'text-emerald-400',
+    'Product Copy': 'text-amber-400',
+    'Marketing Plan': 'text-emerald-400',
+    'Email': 'text-blue-400',
+  }
+  return colorMap[contentType] || 'text-zinc-400'
+}
+
+function getIconBg(contentType: string): string {
+  const bgMap: Record<string, string> = {
+    'Blog Post': 'bg-indigo-500/10',
+    'Social Media': 'bg-purple-500/10',
+    'Technical Paper': 'bg-blue-500/10',
+    'Email Draft': 'bg-emerald-500/10',
+    'Product Copy': 'bg-amber-500/10',
+    'Marketing Plan': 'bg-emerald-500/10',
+    'Email': 'bg-blue-500/10',
+  }
+  return bgMap[contentType] || 'bg-zinc-500/10'
+}
+
+function formatTimeAgo(dateStr: string): string {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+  return date.toLocaleDateString()
+}
+
+const historyItems = computed((): HistoryItem[] => {
+  return entries.value.map(entry => ({
+    id: entry.id,
+    title: entry.title,
+    icon: getIconForType(entry.contentType),
+    iconColor: getIconColor(entry.contentType),
+    iconBg: getIconBg(entry.contentType),
+    type: entry.contentType,
+    date: formatTimeAgo(entry.createdAt),
     status: 'completed',
-  },
-  {
-    id: 2,
-    title: 'Q3 Marketing Strategy Brief',
-    icon: 'campaign',
-    iconColor: 'text-emerald-400',
-    iconBg: 'bg-emerald-500/10',
-    type: 'Marketing Plan',
-    date: 'Yesterday',
-    status: 'draft',
-  },
-  {
-    id: 3,
-    title: 'Cold Outreach Email Sequence',
-    icon: 'alternate_email',
-    iconColor: 'text-blue-400',
-    iconBg: 'bg-blue-500/10',
-    type: 'Email',
-    date: 'Oct 24, 2023',
-    status: 'completed',
-  },
-  {
-    id: 4,
-    title: 'LinkedIn Product Announcement',
-    icon: 'share',
-    iconColor: 'text-purple-400',
-    iconBg: 'bg-purple-500/10',
-    type: 'Social Media',
-    date: 'Oct 23, 2023',
-    status: 'completed',
-  },
-])
+  }))
+})
+
+async function handleDelete(id: string) {
+  if (!confirm('Are you sure you want to delete this entry?')) return
+  try {
+    await deleteHistoryEntry(id)
+    entries.value = entries.value.filter(e => e.id !== id)
+  } catch (err: any) {
+    alert(err.message || 'Failed to delete entry')
+  }
+}
 
 const statusConfig = {
   completed: {
@@ -114,8 +163,18 @@ const statusConfig = {
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="flex items-center justify-center min-h-[400px]">
+      <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="card p-6 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+      <p class="text-red-600 dark:text-red-400">{{ error }}</p>
+    </div>
+
     <!-- Table -->
-    <div class="card overflow-hidden">
+    <div v-else class="card overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -169,7 +228,9 @@ const statusConfig = {
                   >
                     <span class="material-symbols-outlined text-[20px]">content_copy</span>
                   </button>
-                  <button class="p-2 hover:bg-red-500/10 rounded-lg text-zinc-500 hover:text-red-400 transition-colors"
+                  <button
+                    @click="handleDelete(item.id)"
+                    class="p-2 hover:bg-red-500/10 rounded-lg text-zinc-500 hover:text-red-400 transition-colors"
                     title="Delete"
                   >
                     <span class="material-symbols-outlined text-[20px]">delete</span>
@@ -177,14 +238,20 @@ const statusConfig = {
                 </div>
               </td>
             </tr>
+            <tr v-if="historyItems.length === 0">
+              <td colspan="5" class="px-6 py-12 text-center text-zinc-500">
+                <span class="material-symbols-outlined text-4xl mb-2 block text-zinc-300 dark:text-zinc-600">history</span>
+                No history yet. Generate your first content!
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/30">
+      <div v-if="historyItems.length > 0" class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/30">
         <p class="text-sm text-zinc-500">
-          Showing <span class="font-medium text-zinc-600 dark:text-zinc-300">1-4</span> of <span class="font-medium text-zinc-600 dark:text-zinc-300">124</span> results
+          Showing <span class="font-medium text-zinc-600 dark:text-zinc-300">1-{{ historyItems.length }}</span> of <span class="font-medium text-zinc-600 dark:text-zinc-300">{{ entries.length }}</span> results
         </p>
         <div class="flex items-center gap-2">
           <button
