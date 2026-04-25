@@ -118,7 +118,7 @@ const toggleSidebar = () => {
       <!-- Toggle Button -->
       <button
         @click="toggleSidebar"
-        class="absolute -right-3 top-6 w-6 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm z-50 transition-all duration-200"
+        class="absolute -right-3 top-10 w-6 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm z-50 transition-all duration-200"
         :title="sidebarCollapsed ? 'Expand' : 'Collapse'"
       >
         <span class="material-symbols-outlined text-[16px]">{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</span>
