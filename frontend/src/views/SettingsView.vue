@@ -7,12 +7,6 @@ import {
   setGenerationDefaults,
   getDefaultProvider,
   setDefaultProvider,
-  getWorkspaceName,
-  setWorkspaceName,
-  getLanguage,
-  setLanguage,
-  getAutoOptimize,
-  setAutoOptimize,
   exportAllData,
   clearAllData,
   formatJoinDate,
@@ -42,11 +36,7 @@ const defaultContentType = ref('Blog Post')
 const defaultTone = ref('Professional')
 const defaultLength = ref('Medium (~750 words)')
 
-// Workspace
-const workspaceName = ref('Lexora AI')
-const language = ref('English (US)')
-const autoOptimize = ref(true)
-const languages = ['English (US)', 'Spanish', 'French', 'German']
+
 
 // AI Provider
 const defaultProvider = ref('groq')
@@ -99,9 +89,6 @@ onMounted(async () => {
   defaultLength.value = defaults.length
 
   defaultProvider.value = getDefaultProvider()
-  workspaceName.value = getWorkspaceName()
-  language.value = getLanguage()
-  autoOptimize.value = getAutoOptimize()
 
   loading.value = false
 })
@@ -113,11 +100,6 @@ function saveAllSettings() {
     tone: defaultTone.value,
     length: defaultLength.value,
   })
-
-  // Save workspace
-  setWorkspaceName(workspaceName.value)
-  setLanguage(language.value)
-  setAutoOptimize(autoOptimize.value)
 
   // Save provider
   setDefaultProvider(defaultProvider.value)
@@ -359,71 +341,6 @@ function getProviderColor(provider: string): string {
                 v-if="defaultProvider === provider.id"
                 class="material-symbols-outlined text-indigo-500"
               >check_circle</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Workspace Section -->
-      <section id="workspace">
-        <div class="flex items-center gap-2 mb-6">
-          <span class="material-symbols-outlined text-indigo-400">domain</span>
-          <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">Workspace</h2>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 card p-8">
-            <div class="space-y-6">
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Workspace Name</label>
-                <input
-                  v-model="workspaceName"
-                  class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
-                  type="text"
-                />
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Default Language</label>
-                <select
-                  v-model="language"
-                  class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all appearance-none"
-                >
-                  <option v-for="l in languages" :key="l">{{ l }}</option>
-                </select>
-              </div>
-
-              <div class="pt-2">
-                <div class="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-                  <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-zinc-500 dark:text-zinc-400">auto_awesome</span>
-                    <div>
-                      <p class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Auto-Optimization</p>
-                      <p class="text-xs text-zinc-500">Enable AI-driven prompt tuning</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    @click="autoOptimize = !autoOptimize"
-                    class="w-10 h-5 rounded-full relative transition-colors duration-200"
-                    :class="autoOptimize ? 'bg-indigo-600' : 'bg-zinc-300 dark:bg-zinc-700'"
-                  >
-                    <div
-                      class="absolute top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200"
-                      :class="autoOptimize ? 'right-1' : 'left-1'"
-                    ></div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card p-6 bg-indigo-50 dark:bg-indigo-500/5 border-indigo-200 dark:border-indigo-500/20 flex flex-col justify-between">
-            <div>
-              <h4 class="text-indigo-400 font-bold mb-2">Workspace Insight</h4>
-              <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                Configure your workspace preferences to streamline your content generation workflow.
-              </p>
             </div>
           </div>
         </div>
