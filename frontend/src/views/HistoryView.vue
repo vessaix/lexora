@@ -269,48 +269,6 @@ const statusConfig = {
       </div>
     </div>
 
-    <!-- Recent Collections -->
-    <div class="mt-12">
-      <h3 class="text-xl font-semibold text-zinc-900 dark:text-white mb-6">Recent Collections</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Featured Collection -->
-        <div class="md:col-span-2 relative bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-2xl p-6 text-white overflow-hidden group"
-        >
-          <div class="relative z-10">
-            <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest mb-4 inline-block"
-            >
-              Featured
-            </span>
-            <h4 class="text-2xl font-bold mb-2">Q4 Launch Campaign</h4>
-            <p class="text-indigo-200 text-sm max-w-sm mb-6 leading-relaxed">
-              A unified collection of social posts, ad copy, and internal memos for the upcoming enterprise release.
-            </p>
-            <button class="flex items-center gap-2 text-sm font-semibold group-hover:translate-x-1 transition-transform"
-            >
-              Open Collection
-              <span class="material-symbols-outlined text-sm">arrow_forward</span>
-            </button>
-          </div>
-          <div class="absolute right-0 bottom-0 w-1/2 h-full opacity-20 pointer-events-none">
-            <div class="w-full h-full bg-indigo-400 rounded-full blur-3xl transform translate-x-1/3 translate-y-1/3"></div>
-          </div>
-        </div>
 
-        <!-- Favorites Card -->
-        <div class="card p-6 flex flex-col">
-          <div class="w-12 h-12 rounded-xl bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center mb-6"
-          >
-            <span class="material-symbols-outlined text-zinc-500">star</span>
-          </div>
-          <h4 class="text-lg font-bold text-zinc-900 dark:text-white mb-2">Favorites</h4>
-          <p class="text-zinc-500 text-sm mb-6 leading-relaxed">
-            Access your most frequently used and starred generation templates.
-          </p>
-          <div class="mt-auto pt-4 border-t border-zinc-200 dark:border-zinc-800">
-            <span class="text-indigo-400 text-sm font-semibold">12 Saved Items</span>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
