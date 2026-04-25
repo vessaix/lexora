@@ -6,6 +6,7 @@ const email = ref('alex@lexora.ai')
 const workspaceName = ref('Lexora Design Team')
 const language = ref('English (US)')
 const autoOptimize = ref(true)
+const saveSuccess = ref(false)
 
 const languages = ['English (US)', 'Spanish', 'French', 'German']
 
@@ -34,6 +35,13 @@ const billingHistory = [
   { date: 'Dec 12, 2023', invoice: 'Invoice #LEX-2023-012', amount: '$49.00' },
   { date: 'Nov 12, 2023', invoice: 'Invoice #LEX-2023-011', amount: '$49.00' },
 ]
+
+function saveProfile() {
+  saveSuccess.value = true
+  setTimeout(() => {
+    saveSuccess.value = false
+  }, 3000)
+}
 </script>
 
 <template>
@@ -104,8 +112,12 @@ const billingHistory = [
               />
             </div>
           </div>
-          <div class="flex justify-end pt-4">
-            <button class="btn-primary px-6">Save Changes</button>
+          <div class="flex justify-end pt-4 gap-3">
+            <span v-if="saveSuccess" class="flex items-center text-sm text-emerald-400">
+              <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
+              Saved successfully
+            </span>
+            <button @click="saveProfile" class="btn-primary px-6">Save Changes</button>
           </div>
         </div>
       </div>

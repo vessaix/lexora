@@ -8,9 +8,15 @@ const route = useRoute()
 const { currentMode, setTheme } = useTheme()
 const themeMenuOpen = ref(false)
 const themeMenuRef = ref<HTMLElement | null>(null)
+const userMenuOpen = ref(false)
+const userMenuRef = ref<HTMLElement | null>(null)
 
 useClickOutside(themeMenuRef, () => {
   themeMenuOpen.value = false
+})
+
+useClickOutside(userMenuRef, () => {
+  userMenuOpen.value = false
 })
 
 const themeOptions = [
@@ -48,6 +54,11 @@ const currentThemeIcon = () => {
 const sidebarCollapsed = ref(false)
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+const handleLogout = () => {
+  userMenuOpen.value = false
+  alert('Logout functionality will be implemented when authentication is added.')
 }
 </script>
 
@@ -168,12 +179,41 @@ const toggleSidebar = () => {
           <span class="material-symbols-outlined">notifications</span>
         </button>
         <div class="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-2"></div>
-        <button class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Alex Rivers</span>
-          <div class="w-8 h-8 rounded-full border border-zinc-300 dark:border-zinc-700 bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-            AR
+        <div ref="userMenuRef" class="relative">
+          <button
+            @click="userMenuOpen = !userMenuOpen"
+            class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Alex Rivers</span>
+            <div class="w-8 h-8 rounded-full border border-zinc-300 dark:border-zinc-700 bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+              AR
+            </div>
+          </button>
+          <div
+            v-if="userMenuOpen"
+            class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden z-50 shadow-xl"
+          >
+            <div class="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+              <p class="text-sm font-medium text-zinc-900 dark:text-white">Alex Rivers</p>
+              <p class="text-xs text-zinc-500">alex@lexora.ai</p>
+            </div>
+            <RouterLink
+              to="/settings"
+              @click="userMenuOpen = false"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              <span class="material-symbols-outlined text-base">person</span>
+              <span>Profile</span>
+            </RouterLink>
+            <button
+              @click="handleLogout"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-t border-zinc-200 dark:border-zinc-800"
+            >
+              <span class="material-symbols-outlined text-base">logout</span>
+              <span>Logout</span>
+            </button>
           </div>
-        </button>
+        </div>
       </div>
     </header>
 
