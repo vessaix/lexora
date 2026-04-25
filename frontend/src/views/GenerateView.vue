@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useClickOutside } from '../composables/useClickOutside'
 import { generateContent } from '../services/api'
 import { saveToHistory } from '../services/dashboard'
+import { getGenerationDefaults } from '../services/preferences'
 
 const topic = ref('')
 const contentType = ref('Blog Post')
@@ -10,6 +11,14 @@ const tone = ref('Professional')
 const length = ref('Medium (~750 words)')
 const generating = ref(false)
 const error = ref('')
+
+// Load saved defaults on mount
+onMounted(() => {
+  const defaults = getGenerationDefaults()
+  contentType.value = defaults.contentType
+  tone.value = defaults.tone
+  length.value = defaults.length
+})
 
 // Generated content state
 const generatedContent = ref('')
