@@ -1,15 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { AccountsService } from '../accounts.service'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly accountsService: AccountsService) {
+  constructor(
+    private readonly accountsService: AccountsService,
+    private readonly configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'lexora-secret-key-change-in-production',
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'lexora-secret-key-change-in-production',
     })
   }
 
