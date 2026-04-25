@@ -17,6 +17,7 @@ interface HistoryItem {
 const entries = ref<HistoryEntry[]>([])
 const loading = ref(true)
 const error = ref('')
+const searchQuery = ref('')
 
 onMounted(async () => {
   try {
@@ -83,7 +84,19 @@ function formatTimeAgo(dateStr: string): string {
 }
 
 const historyItems = computed((): HistoryItem[] => {
-  return entries.value.map(entry => ({
+  const query = searchQuery.value.toLowerCase().trim()
+  let items = entries.value
+
+  if (query) {
+    items = items.filter(entry =>
+      entry.title.toLowerCase().includes(query) ||
+      entry.contentType.toLowerCase().includes(query) ||
+      entry.content.toLowerCase().includes(query) ||
+      entry.tone.toLowerCase().includes(query)
+    )
+  }
+
+  return items.map(entry => ({
     id: entry.id,
     title: entry.title,
     icon: getIconForType(entry.contentType),
@@ -142,6 +155,7 @@ const statusConfig = {
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
         >search</span>
         <input
+          v-model="searchQuery"
           class="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm outline-none text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600"
           placeholder="Search past generations..."
           type="text"
@@ -240,8 +254,8 @@ const statusConfig = {
             </tr>
             <tr v-if="historyItems.length === 0">
               <td colspan="5" class="px-6 py-12 text-center text-zinc-500">
-                <span class="material-symbols-outlined text-4xl mb-2 block text-zinc-300 dark:text-zinc-600">history</span>
-                No history yet. Generate your first content!
+                <span class="material-symbols-outlined text-4xl mb-2 block text-zinc-300 dark:text-zinc-600">{{ searchQuery ? 'search_off' : 'history' }}</span>
+                {{ searchQuery ? `No results found for "${searchQuery}"` : 'No history yet. Generate your first content!' }}
               </td>
             </tr>
           </tbody>
@@ -251,7 +265,7 @@ const statusConfig = {
       <!-- Pagination -->
       <div v-if="historyItems.length > 0" class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/30">
         <p class="text-sm text-zinc-500">
-          Showing <span class="font-medium text-zinc-600 dark:text-zinc-300">1-{{ historyItems.length }}</span> of <span class="font-medium text-zinc-600 dark:text-zinc-300">{{ entries.length }}</span> results
+          Showing <span class="font-medium text-zinc-600 dark:text-zinc-300">1-{{ historyItems.length }}</span> of <span class="font-medium text-zinc-600 dark:text-zinc-300">{{ historyItems.length }}</span> results
         </p>
         <div class="flex items-center gap-2">
           <button
