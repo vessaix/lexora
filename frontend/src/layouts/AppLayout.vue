@@ -44,23 +44,32 @@ const currentThemeIcon = () => {
   const opt = themeOptions.find(o => o.mode === currentMode.value)
   return opt?.icon || 'desktop_windows'
 }
+
+const sidebarCollapsed = ref(false)
+const toggleSidebar = () => {
+  sidebarCollapsed.value = !sidebarCollapsed.value
+}
 </script>
 
 <template>
   <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans antialiased">
     <!-- Sidebar -->
-    <aside class="fixed left-0 top-0 h-screen w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col p-4 gap-2 z-50">
-      <div class="flex items-center gap-3 px-2 mb-8">
-        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+    <aside
+      class="fixed left-0 top-0 h-screen border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col p-4 gap-2 z-50 transition-all duration-300"
+      :class="sidebarCollapsed ? 'w-16 items-center' : 'w-64'"
+    >
+      <div class="flex items-center gap-3 px-2 mb-8" :class="sidebarCollapsed ? 'justify-center' : ''">
+        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
           <span class="material-symbols-outlined text-white material-symbols-filled text-[20px]">auto_awesome</span>
         </div>
-        <div class="flex flex-col">
+        <div v-if="!sidebarCollapsed" class="flex flex-col">
           <span class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">Lexora AI</span>
           <span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Intelligence Engine</span>
         </div>
       </div>
 
       <RouterLink
+        v-if="!sidebarCollapsed"
         to="/generate"
         class="mb-6 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition-all active:scale-[0.98]"
       >
@@ -68,40 +77,58 @@ const currentThemeIcon = () => {
         <span class="text-sm">New Project</span>
       </RouterLink>
 
-      <nav class="flex-1 space-y-1">
+      <nav class="flex-1 space-y-1 w-full">
         <RouterLink
           v-for="item in mainNav"
           :key="item.path"
           :to="item.path"
           class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-all duration-200"
-          :class="isActive(item.path)
-            ? 'bg-zinc-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400'
-            : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 hover:text-zinc-900 dark:hover:text-zinc-200'"
+          :class="[
+            isActive(item.path)
+              ? 'bg-zinc-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400'
+              : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 hover:text-zinc-900 dark:hover:text-zinc-200',
+            sidebarCollapsed ? 'justify-center px-2' : ''
+          ]"
+          :title="sidebarCollapsed ? item.name : ''"
         >
           <span class="material-symbols-outlined">{{ item.icon }}</span>
-          <span>{{ item.name }}</span>
+          <span v-if="!sidebarCollapsed">{{ item.name }}</span>
         </RouterLink>
       </nav>
 
-      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-1 w-full">
         <RouterLink
           v-for="item in bottomNav"
           :key="item.path"
           :to="item.path"
           class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-all duration-200"
-          :class="isActive(item.path)
-            ? 'bg-zinc-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400'
-            : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 hover:text-zinc-900 dark:hover:text-zinc-200'"
+          :class="[
+            isActive(item.path)
+              ? 'bg-zinc-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400'
+              : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 hover:text-zinc-900 dark:hover:text-zinc-200',
+            sidebarCollapsed ? 'justify-center px-2' : ''
+          ]"
+          :title="sidebarCollapsed ? item.name : ''"
         >
           <span class="material-symbols-outlined">{{ item.icon }}</span>
-          <span>{{ item.name }}</span>
+          <span v-if="!sidebarCollapsed">{{ item.name }}</span>
         </RouterLink>
       </div>
+
+      <!-- Toggle Button -->
+      <button
+        @click="toggleSidebar"
+        class="mt-2 w-full flex items-center justify-center py-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200"
+        :title="sidebarCollapsed ? 'Expand' : 'Collapse'"
+      >
+        <span class="material-symbols-outlined">{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</span>
+      </button>
     </aside>
 
     <!-- Top Navbar -->
     <header
-      class="fixed top-0 right-0 left-64 h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 backdrop-blur-xl z-40 flex items-center justify-between px-8"
+      class="fixed top-0 right-0 h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 backdrop-blur-xl z-40 flex items-center justify-between px-8 transition-all duration-300"
+      :class="sidebarCollapsed ? 'left-16' : 'left-64'"
     >
       <div class="flex-1">
         <!-- Page title or breadcrumb could go here -->
@@ -151,7 +178,10 @@ const currentThemeIcon = () => {
     </header>
 
     <!-- Main Content -->
-    <main class="ml-64 mt-16 p-8 min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <main
+      class="mt-16 p-8 min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-all duration-300"
+      :class="sidebarCollapsed ? 'ml-16' : 'ml-64'"
+    >
       <RouterView />
     </main>
   </div>
