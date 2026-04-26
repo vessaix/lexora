@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { fetchDashboard, type DashboardData } from '../services/dashboard'
+import { getUser } from '../services/auth'
 import { jsPDF } from 'jspdf'
 
 const dashboard = ref<DashboardData | null>(null)
 const loading = ref(true)
 const error = ref('')
 const showExportMenu = ref(false)
+
+const userName = computed(() => getUser()?.name || 'User')
 
 function closeExportMenu(e: MouseEvent) {
   const target = e.target as HTMLElement
@@ -276,7 +279,7 @@ function exportCSV() {
       <div class="flex items-end justify-between">
         <div>
           <h1 class="page-title mb-2">Workspace Overview</h1>
-          <p class="page-subtitle">Welcome back, Alex. Here's what happened with Lexora AI today.</p>
+          <p class="page-subtitle">Welcome back, {{ userName }}. Here's what happened with Lexora AI today.</p>
         </div>
         <div class="flex gap-3">
           <button class="btn-ghost flex items-center gap-2">
